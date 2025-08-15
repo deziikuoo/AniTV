@@ -13,7 +13,7 @@ import fs from 'fs';
 // import meta from './routes/meta';
 // import news from './routes/news';
 import chalk from 'chalk';
-import Utils from './utils';
+// import Utils from './utils';
 import { setupSecurityMiddleware } from './security';
 import { secureLogger } from './utils/logger';
 
@@ -175,11 +175,11 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
   //   console.warn(chalk.yellowBright('News route registration failed:', err?.message || 'Unknown error'));
   // }
 
-  try {
-    await fastify.register(Utils, { prefix: '/utils' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Utils route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(Utils, { prefix: '/utils' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Utils route registration failed:', err?.message || 'Unknown error'));
+  // }
 
   try {
     fastify.get('/', (_, rp) => {

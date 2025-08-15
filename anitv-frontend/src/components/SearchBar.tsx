@@ -16,7 +16,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const debounceTimeoutRef = useRef<number | undefined>(undefined);
 
   // Fetch suggestions from API
   const fetchSuggestions = async (searchQuery: string) => {
@@ -52,7 +52,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     // Set new timeout for debounced search
-    debounceTimeoutRef.current = setTimeout(() => {
+    debounceTimeoutRef.current = window.setTimeout(() => {
       fetchSuggestions(query);
     }, 300); // 300ms debounce delay
 

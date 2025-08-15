@@ -26,6 +26,8 @@
         "@consumet/extensions": "github:consumet/consumet.ts",
         "@fastify/cors": "^8.5.0",
         "@fastify/helmet": "^13.0.1",
+        "@types/cors": "^2.8.19",
+        "@types/jest": "^30.0.0",
         "@types/node": "^18.11.17",
         "@types/ws": "^8.5.3",
         "axios": "^1.0.0",
@@ -44,9 +46,7 @@
         "ws": "^8.8.1"
     },
     "devDependencies": {
-        "@types/cors": "^2.8.19",
         "@types/helmet": "^0.0.48",
-        "@types/jest": "^30.0.0",
         "nodemon": "3.0.1",
         "prettier": "^3.0.0",
         "typescript": "5.3.3"

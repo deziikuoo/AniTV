@@ -1,0 +1,13 @@
+{"level":"info","message":"Starting server on port 3010... 🚀","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"warn","message":"Redis not found. Cache disabled.","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"warn","message":"TMDB api key not found. the TMDB meta route may not work.","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Books routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Anime routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Manga routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Comics routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Light novels routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Movies routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Meta routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"News routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"info","message":"Utils routes registered successfully","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}
+{"level":"warn","message":"AnimeOwl promise rejection caught and handled:","service":"anitv-api","timestamp":"2025-08-15 05:24:03","version":"1.0.0"}

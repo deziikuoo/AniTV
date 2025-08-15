@@ -14,6 +14,8 @@ import meta from './routes/meta';
 import news from './routes/news';
 import chalk from 'chalk';
 import Utils from './utils';
+import { setupSecurityMiddleware } from './security';
+import { secureLogger } from './utils/logger';
 
 export const redis =
   process.env.REDIS_HOST &&
@@ -29,12 +31,11 @@ const fastify = Fastify({
 });
 export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
 (async () => {
-  const PORT = Number(process.env.PORT) || 3000;
+  try {
+    const PORT = Number(process.env.PORT) || 3010;
 
-  await fastify.register(FastifyCors, {
-    origin: '*',
-    methods: 'GET',
-  });
+  // Setup security middleware
+  await setupSecurityMiddleware(fastify);
 
   if (process.env.NODE_ENV === 'DEMO') {
     console.log(chalk.yellowBright('DEMO MODE ENABLED'));
@@ -123,24 +124,62 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
     );
   }
 
-  console.log(chalk.green(`Starting server on port ${PORT}... 🚀`));
+  secureLogger.info(`Starting server on port ${PORT}... 🚀`);
   if (!process.env.REDIS_HOST)
-    console.warn(chalk.yellowBright('Redis not found. Cache disabled.'));
+    secureLogger.warn('Redis not found. Cache disabled.');
   if (!process.env.TMDB_KEY)
-    console.warn(
-      chalk.yellowBright('TMDB api key not found. the TMDB meta route may not work.'),
-    );
+    secureLogger.warn('TMDB api key not found. the TMDB meta route may not work.');
 
-  await fastify.register(books, { prefix: '/books' });
-  await fastify.register(anime, { prefix: '/anime' });
-  await fastify.register(manga, { prefix: '/manga' });
+  // Register routes with error handling
+  try {
+    await fastify.register(books, { prefix: '/books' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Books route registration failed:', err?.message || 'Unknown error'));
+  }
+  
+  try {
+    await fastify.register(anime, { prefix: '/anime' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Anime route registration failed:', err?.message || 'Unknown error'));
+  }
+  
+  try {
+    await fastify.register(manga, { prefix: '/manga' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Manga route registration failed:', err?.message || 'Unknown error'));
+  }
+  
   //await fastify.register(comics, { prefix: '/comics' });
-  await fastify.register(lightnovels, { prefix: '/light-novels' });
-  await fastify.register(movies, { prefix: '/movies' });
-  await fastify.register(meta, { prefix: '/meta' });
-  await fastify.register(news, { prefix: '/news' });
+  
+  try {
+    await fastify.register(lightnovels, { prefix: '/light-novels' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Light novels route registration failed:', err?.message || 'Unknown error'));
+  }
+  
+  try {
+    await fastify.register(movies, { prefix: '/movies' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Movies route registration failed:', err?.message || 'Unknown error'));
+  }
+  
+  try {
+    await fastify.register(meta, { prefix: '/meta' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Meta route registration failed:', err?.message || 'Unknown error'));
+  }
+  
+  try {
+    await fastify.register(news, { prefix: '/news' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('News route registration failed:', err?.message || 'Unknown error'));
+  }
 
-  await fastify.register(Utils, { prefix: '/utils' });
+  try {
+    await fastify.register(Utils, { prefix: '/utils' });
+  } catch (err: any) {
+    console.warn(chalk.yellowBright('Utils route registration failed:', err?.message || 'Unknown error'));
+  }
 
   try {
     fastify.get('/', (_, rp) => {
@@ -164,6 +203,10 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
     });
   } catch (err: any) {
     fastify.log.error(err);
+    process.exit(1);
+  }
+  } catch (err: any) {
+    console.error('Failed to start server:', err);
     process.exit(1);
   }
 })();

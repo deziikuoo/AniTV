@@ -4,14 +4,14 @@ import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import fs from 'fs';
 
-// import books from './routes/books';
-// import anime from './routes/anime';
-// import manga from './routes/manga';
-// import comics from './routes/comics';
-// import lightnovels from './routes/light-novels';
-// import movies from './routes/movies';
-// import meta from './routes/meta';
-// import news from './routes/news';
+import books from './routes/books';
+import anime from './routes/anime';
+import manga from './routes/manga';
+import comics from './routes/comics';
+import lightnovels from './routes/light-novels';
+import movies from './routes/movies';
+import meta from './routes/meta';
+import news from './routes/news';
 import chalk from 'chalk';
 // import Utils from './utils';
 import { setupSecurityMiddleware } from './security';
@@ -28,6 +28,33 @@ export const redis =
 const fastify = Fastify({
   maxParamLength: 1000,
   logger: true,
+});
+
+// Global error handler to prevent AnimeOwl crashes
+process.on('uncaughtException', (error) => {
+  if (error.message.includes('AnimeOwl') || error.message.includes('Something went wrong')) {
+    secureLogger.warn('AnimeOwl error caught and handled:', error.message);
+    // Don't exit the process, just log the error
+  } else {
+    secureLogger.error('Uncaught exception:', error);
+    process.exit(1);
+  }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  if (reason && typeof reason === 'object' && 'message' in reason) {
+    const errorMessage = (reason as Error).message;
+    if (errorMessage.includes('AnimeOwl') || errorMessage.includes('Something went wrong')) {
+      secureLogger.warn('AnimeOwl promise rejection caught and handled:', errorMessage);
+      // Don't exit the process, just log the error
+    } else {
+      secureLogger.error('Unhandled promise rejection:', reason);
+      process.exit(1);
+    }
+  } else {
+    secureLogger.error('Unhandled promise rejection:', reason);
+    process.exit(1);
+  }
 });
 export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
 (async () => {
@@ -130,50 +157,62 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
   if (!process.env.TMDB_KEY)
     secureLogger.warn('TMDB api key not found. the TMDB meta route may not work.');
 
-  // Register routes with error handling
-  // try {
-  //   await fastify.register(books, { prefix: '/books' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Books route registration failed:', err?.message || 'Unknown error'));
-  // }
+  // Register routes with enhanced error handling
+  try {
+    await fastify.register(books, { prefix: '/books' });
+    secureLogger.info('Books routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Books route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(anime, { prefix: '/anime' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Anime route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(anime, { prefix: '/anime' });
+    secureLogger.info('Anime routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Anime route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(manga, { prefix: '/manga' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Manga route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(manga, { prefix: '/manga' });
+    secureLogger.info('Manga routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Manga route registration failed:', err?.message || 'Unknown error');
+  }
   
-  //await fastify.register(comics, { prefix: '/comics' });
+  try {
+    await fastify.register(comics, { prefix: '/comics' });
+    secureLogger.info('Comics routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Comics route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(lightnovels, { prefix: '/light-novels' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Light novels route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(lightnovels, { prefix: '/light-novels' });
+    secureLogger.info('Light novels routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Light novels route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(movies, { prefix: '/movies' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Movies route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(movies, { prefix: '/movies' });
+    secureLogger.info('Movies routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Movies route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(meta, { prefix: '/meta' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('Meta route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(meta, { prefix: '/meta' });
+    secureLogger.info('Meta routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('Meta route registration failed:', err?.message || 'Unknown error');
+  }
   
-  // try {
-  //   await fastify.register(news, { prefix: '/news' });
-  // } catch (err: any) {
-  //   console.warn(chalk.yellowBright('News route registration failed:', err?.message || 'Unknown error'));
-  // }
+  try {
+    await fastify.register(news, { prefix: '/news' });
+    secureLogger.info('News routes registered successfully');
+  } catch (err: any) {
+    secureLogger.warn('News route registration failed:', err?.message || 'Unknown error');
+  }
 
   // try {
   //   await fastify.register(Utils, { prefix: '/utils' });

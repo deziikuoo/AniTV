@@ -28,7 +28,7 @@
         "@fastify/helmet": "^13.0.1",
         "@types/cors": "^2.8.19",
         "@types/jest": "^30.0.0",
-        "@types/node": "^18.11.17",
+        "@types/node": "^24.2.1",
         "@types/ws": "^8.5.3",
         "axios": "^1.0.0",
         "chalk": "4.1.2",

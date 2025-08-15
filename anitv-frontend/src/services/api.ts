@@ -9,21 +9,19 @@ import type {
   SearchResponse
 } from '../types';
 
-// API Configuration
-const API_BASE_URL = 'https://anitv.onrender.com';
-
+// Base API configuration
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_URL || 'https://anitv.onrender.com',
+  timeout: 10000, // 10 second timeout
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor for error handling
+// Request interceptor for logging
 api.interceptors.request.use(
   (config) => {
-    console.log(`Making request to: ${config.url}`);
+    console.log('Making request to:', config.url);
     return config;
   },
   (error) => {
@@ -32,20 +30,41 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for better error handling
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     console.error('Response error:', error);
-    if (error.response?.status === 404) {
-      throw new Error('Content not found');
+    
+    // Handle different types of errors
+    if (error.code === 'ERR_NETWORK') {
+      console.error('Network error - server may be down or CORS issue');
+      return Promise.reject(new Error('Network error - please check your connection'));
     }
+    
+    if (error.response?.status === 503) {
+      console.error('Service unavailable - server is down');
+      return Promise.reject(new Error('Service temporarily unavailable'));
+    }
+    
+    if (error.response?.status === 429) {
+      console.error('Rate limited');
+      return Promise.reject(new Error('Too many requests - please wait a moment'));
+    }
+    
     if (error.response?.status >= 500) {
-      throw new Error('Server error. Please try again later.');
+      console.error('Server error:', error.response.status);
+      return Promise.reject(new Error('Server error - please try again later'));
     }
-    throw new Error(error.response?.data?.message || 'An error occurred');
+    
+    if (error.response?.status >= 400) {
+      console.error('Client error:', error.response.status);
+      return Promise.reject(new Error('Request failed - please check your input'));
+    }
+    
+    return Promise.reject(error);
   }
 );
 
@@ -241,6 +260,112 @@ export const searchApi = {
       };
     }
   },
+
+  // Get search suggestions from multiple providers
+  getSuggestions: async (query: string): Promise<string[]> => {
+    try {
+      // Get suggestions from multiple providers in parallel
+      const [animeKaiSuggestions, zoroSuggestions, trendingSuggestions] = await Promise.allSettled([
+        // AnimeKai search suggestions
+        api.get(`/anime/animekai/search-suggestions/${encodeURIComponent(query)}`),
+        // Zoro search suggestions
+        api.get(`/anime/zoro/search-suggestions/${encodeURIComponent(query)}`),
+        // Get trending content for fallback suggestions
+        Promise.all([
+          movieApi.getPopular('flixhq'),
+          animeApi.getRecentEpisodes('gogoanime'),
+        ])
+      ]);
+
+      const suggestions: string[] = [];
+
+      // Process AnimeKai suggestions
+      if (animeKaiSuggestions.status === 'fulfilled' && animeKaiSuggestions.value.data) {
+        const animeKaiData = animeKaiSuggestions.value.data;
+        if (Array.isArray(animeKaiData)) {
+          suggestions.push(...animeKaiData.slice(0, 3));
+        } else if (animeKaiData.results && Array.isArray(animeKaiData.results)) {
+          suggestions.push(...animeKaiData.results.slice(0, 3).map((item: any) => item.title));
+        }
+      }
+
+      // Process Zoro suggestions
+      if (zoroSuggestions.status === 'fulfilled' && zoroSuggestions.value.data) {
+        const zoroData = zoroSuggestions.value.data;
+        if (Array.isArray(zoroData)) {
+          suggestions.push(...zoroData.slice(0, 3));
+        } else if (zoroData.results && Array.isArray(zoroData.results)) {
+          suggestions.push(...zoroData.results.slice(0, 3).map((item: any) => item.title));
+        }
+      }
+
+      // Add trending content as fallback suggestions
+      if (trendingSuggestions.status === 'fulfilled') {
+        const [popularMovies, recentAnime] = trendingSuggestions.value;
+        const trendingTitles = [
+          ...popularMovies.slice(0, 2).map((item: any) => item.title),
+          ...recentAnime.slice(0, 2).map((item: any) => item.title)
+        ];
+        suggestions.push(...trendingTitles);
+      }
+
+      // Remove duplicates and limit to 8 suggestions
+      const uniqueSuggestions = [...new Set(suggestions)].slice(0, 8);
+      
+      return uniqueSuggestions;
+    } catch (error) {
+      console.error('Error fetching search suggestions:', error);
+      // Return trending content as fallback
+      return getFallbackSuggestions();
+    }
+  },
+
+  // Get trending suggestions for empty search state
+  getTrendingSuggestions: async (): Promise<string[]> => {
+    try {
+      const [popularMovies, recentAnime, topAiring] = await Promise.allSettled([
+        movieApi.getPopular('flixhq'),
+        animeApi.getRecentEpisodes('gogoanime'),
+        animeApi.getTopAiring('gogoanime')
+      ]);
+
+      const suggestions: string[] = [];
+
+      // Add popular movies
+      if (popularMovies.status === 'fulfilled') {
+        suggestions.push(...popularMovies.value.slice(0, 3).map((item: any) => item.title));
+      }
+
+      // Add recent anime
+      if (recentAnime.status === 'fulfilled') {
+        suggestions.push(...recentAnime.value.slice(0, 3).map((item: any) => item.title));
+      }
+
+      // Add top airing anime
+      if (topAiring.status === 'fulfilled') {
+        suggestions.push(...topAiring.value.slice(0, 2).map((item: any) => item.title));
+      }
+
+      return [...new Set(suggestions)].slice(0, 8);
+    } catch (error) {
+      console.error('Error fetching trending suggestions:', error);
+      return getFallbackSuggestions();
+    }
+  }
+};
+
+// Fallback suggestions when API calls fail
+const getFallbackSuggestions = (): string[] => {
+  return [
+    'Attack on Titan',
+    'Demon Slayer',
+    'One Piece',
+    'Spider-Man: Into The Spider-Verse',
+    'Breaking Bad',
+    'Game of Thrones',
+    'Dunkirk',
+    'The Martian'
+  ];
 };
 
 export default api;

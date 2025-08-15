@@ -5,7 +5,7 @@ import FastifyCors from '@fastify/cors';
 import fs from 'fs';
 
 import books from './routes/books';
-import anime from './routes/anime';
+// import anime from './routes/anime';
 import manga from './routes/manga';
 import comics from './routes/comics';
 import lightnovels from './routes/light-novels';
@@ -137,11 +137,11 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
     console.warn(chalk.yellowBright('Books route registration failed:', err?.message || 'Unknown error'));
   }
   
-  try {
-    await fastify.register(anime, { prefix: '/anime' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Anime route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(anime, { prefix: '/anime' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Anime route registration failed:', err?.message || 'Unknown error'));
+  // }
   
   try {
     await fastify.register(manga, { prefix: '/manga' });

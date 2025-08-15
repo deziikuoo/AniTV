@@ -4,14 +4,14 @@ import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import fs from 'fs';
 
-import books from './routes/books';
+// import books from './routes/books';
 // import anime from './routes/anime';
-import manga from './routes/manga';
-import comics from './routes/comics';
-import lightnovels from './routes/light-novels';
-import movies from './routes/movies';
-import meta from './routes/meta';
-import news from './routes/news';
+// import manga from './routes/manga';
+// import comics from './routes/comics';
+// import lightnovels from './routes/light-novels';
+// import movies from './routes/movies';
+// import meta from './routes/meta';
+// import news from './routes/news';
 import chalk from 'chalk';
 import Utils from './utils';
 import { setupSecurityMiddleware } from './security';
@@ -131,11 +131,11 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
     secureLogger.warn('TMDB api key not found. the TMDB meta route may not work.');
 
   // Register routes with error handling
-  try {
-    await fastify.register(books, { prefix: '/books' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Books route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(books, { prefix: '/books' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Books route registration failed:', err?.message || 'Unknown error'));
+  // }
   
   // try {
   //   await fastify.register(anime, { prefix: '/anime' });
@@ -143,37 +143,37 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
   //   console.warn(chalk.yellowBright('Anime route registration failed:', err?.message || 'Unknown error'));
   // }
   
-  try {
-    await fastify.register(manga, { prefix: '/manga' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Manga route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(manga, { prefix: '/manga' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Manga route registration failed:', err?.message || 'Unknown error'));
+  // }
   
   //await fastify.register(comics, { prefix: '/comics' });
   
-  try {
-    await fastify.register(lightnovels, { prefix: '/light-novels' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Light novels route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(lightnovels, { prefix: '/light-novels' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Light novels route registration failed:', err?.message || 'Unknown error'));
+  // }
   
-  try {
-    await fastify.register(movies, { prefix: '/movies' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Movies route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(movies, { prefix: '/movies' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Movies route registration failed:', err?.message || 'Unknown error'));
+  // }
   
-  try {
-    await fastify.register(meta, { prefix: '/meta' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('Meta route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(meta, { prefix: '/meta' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('Meta route registration failed:', err?.message || 'Unknown error'));
+  // }
   
-  try {
-    await fastify.register(news, { prefix: '/news' });
-  } catch (err: any) {
-    console.warn(chalk.yellowBright('News route registration failed:', err?.message || 'Unknown error'));
-  }
+  // try {
+  //   await fastify.register(news, { prefix: '/news' });
+  // } catch (err: any) {
+  //   console.warn(chalk.yellowBright('News route registration failed:', err?.message || 'Unknown error'));
+  // }
 
   try {
     await fastify.register(Utils, { prefix: '/utils' });

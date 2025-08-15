@@ -35,7 +35,7 @@ const rateLimitConfig = {
 
 // CORS configuration
 const corsConfig = {
-  origin: process.env.NODE_ENV === 'development' ? true : (process.env.FRONTEND_URL || ['http://localhost:3010', 'http://localhost:5173', 'http://localhost:5183']),
+  origin: true, // Allow all origins for now to fix CORS issues
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

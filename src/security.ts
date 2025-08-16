@@ -35,12 +35,33 @@ const rateLimitConfig = {
 
 // CORS configuration
 const corsConfig = {
-  origin: true, // Allow all origins for now to fix CORS issues
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5183',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5183',
+    'https://anitv.onrender.com',
+    'https://anitv-frontend.vercel.app',
+    'https://anitv-frontend.netlify.app',
+    'https://ani-kuz0tsniu-dawans-projects.vercel.app'
+  ],
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['X-Total-Count'],
-  maxAge: 86400 // 24 hours
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+  ],
+  exposedHeaders: ['X-Total-Count', 'Content-Range'],
+  maxAge: 86400, // 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
 // Security headers configuration

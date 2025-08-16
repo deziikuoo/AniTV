@@ -173,19 +173,29 @@ const routes = async (fastify: FastifyInstance, options: RegisterOptions) => {
   fastify.get('/top-airing', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const page = (request.query as { page: number }).page ?? 1;
+      console.log('Fetching top airing anime, page:', page);
 
       const res = redis ? await cache.fetch(
         redis as Redis,
         `${redisPrefix}top-airing;${page}`,
-        async () => await gogoanime.fetchTopAiring(page),
+        async () => {
+          console.log('Fetching from GogoAnime provider...');
+          const result = await gogoanime.fetchTopAiring(page);
+          console.log('GogoAnime response received');
+          return result;
+        },
         redisCacheTime,
       ) : await gogoanime.fetchTopAiring(page);
 
       reply.status(200).send(res);
     } catch (err) {
+      console.error('Error in top-airing route:', err);
       reply
         .status(500)
-        .send({ message: 'Something went wrong. Contact developers for help.' });
+        .send({ 
+          message: 'Something went wrong. Contact developers for help.',
+          error: process.env.NODE_ENV === 'development' ? (err as Error).message : undefined
+        });
     }
   });
 

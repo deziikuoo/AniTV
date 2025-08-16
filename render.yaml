@@ -12,6 +12,8 @@ services:
         value: 3010
       - key: FRONTEND_URL
         value: http://localhost:5183
+      - key: GOGOANIME_URL
+        value: https://www1.gogoanime.bid
     headers:
       - path: /*
         name: X-Frame-Options
